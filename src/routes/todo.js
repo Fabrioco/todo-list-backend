@@ -1,5 +1,6 @@
 const express = require("express");
 const Todo = require("../models/todo.js");
+const router = require("express/lib/router/index.js");
 const routerTodo = express.Router();
 
 routerTodo.post("/create", async (req, res) => {
@@ -19,7 +20,7 @@ routerTodo.post("/create", async (req, res) => {
   }
 });
 
-routerTodo.get("/get/:id", async (req, res) => {
+routerTodo.get("/getAll/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const todos = await Todo.findAll({ where: { user_id: id } });
@@ -27,6 +28,20 @@ routerTodo.get("/get/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch todos" });
+  }
+});
+
+routerTodo.get("/get/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const todo = await Todo.findByPk(id);
+    if (!todo) {
+      return res.status(404).json({ error: "Todo not found" });
+    }
+    res.status(200).json(todo);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch todo" });
   }
 });
 
